@@ -66,14 +66,11 @@ jobs:
           CERTS_LANE_OUTCOME="${{ steps.certs.outcome }}"
 
           if [ -f "$CERT_STATUS_FILE" ]; then
-            CERT_STATUS=$(cat "$CERT_STATUS_FILE" | tr -d '\n' | tr -d '\r') # Read file content and strip newlines
+            CERT_STATUS=$(tr -d '\n\r' < "$CERT_STATUS_FILE") # Read file content and strip newlines
             echo "new_certificate_needed: $CERT_STATUS"
           else
-            echo "Certificate status file not found. Defaulting to false."
-          fi
-
-          if [ -z "${CERT_STATUS:-}" ]; then
             CERT_STATUS=false
+            echo "Certificate status file not found. Defaulting to false."
           fi
 
           if [ "$CERTS_LANE_OUTCOME" = "failure" ]; then
