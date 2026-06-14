@@ -51,6 +51,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Running Fastlane certs lane..."
+          # Continue even if Fastlane fails so downstream steps can decide whether to nuke and recreate certificates.
           bundle exec fastlane certs
 
       - name: Check Distribution certificate and launch Nuke certificates if needed
@@ -71,13 +72,13 @@ jobs:
             echo "Certificate status file not found. Defaulting to false."
           fi
 
+          if [ -z "${CERT_STATUS:-}" ]; then
+            CERT_STATUS=false
+          fi
+
           if [ "$CERTS_LANE_OUTCOME" = "failure" ]; then
             echo "::warning::Fastlane cert validation failed. Marking certificates for recreation."
             CERT_STATUS=true
-          fi
-
-          if [ -z "${CERT_STATUS:-}" ]; then
-            CERT_STATUS=false
           fi
 
           echo "new_certificate_needed=$CERT_STATUS" >> $GITHUB_OUTPUT
