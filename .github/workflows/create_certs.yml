@@ -68,13 +68,16 @@ jobs:
             CERT_STATUS=$(cat "$CERT_STATUS_FILE" | tr -d '\n' | tr -d '\r') # Read file content and strip newlines
             echo "new_certificate_needed: $CERT_STATUS"
           else
-            CERT_STATUS=false
             echo "Certificate status file not found. Defaulting to false."
           fi
 
           if [ "$CERTS_LANE_OUTCOME" = "failure" ]; then
             echo "::warning::Fastlane cert validation failed. Marking certificates for recreation."
             CERT_STATUS=true
+          fi
+
+          if [ -z "${CERT_STATUS:-}" ]; then
+            CERT_STATUS=false
           fi
 
           echo "new_certificate_needed=$CERT_STATUS" >> $GITHUB_OUTPUT
