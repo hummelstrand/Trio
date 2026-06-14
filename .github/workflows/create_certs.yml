@@ -63,10 +63,11 @@ jobs:
         run: |
           CERT_STATUS_FILE="${{ github.workspace }}/fastlane/new_certificate_needed.txt"
           ENABLE_NUKE_CERTS=${{ vars.ENABLE_NUKE_CERTS }}
+          CERT_STATUS=""
           CERTS_LANE_OUTCOME="${{ steps.certs.outcome }}"
 
           if [ -f "$CERT_STATUS_FILE" ]; then
-            CERT_STATUS=$(tr -d '\n\r' < "$CERT_STATUS_FILE") # Read file content and strip newlines
+            CERT_STATUS=$(cat "$CERT_STATUS_FILE" | tr -d '\n' | tr -d '\r') # Read file content and strip newlines
             echo "new_certificate_needed: $CERT_STATUS"
           else
             CERT_STATUS=false
